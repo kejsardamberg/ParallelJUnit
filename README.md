@@ -13,7 +13,7 @@ Custom JUnit test runner that enables executing JUnit test methods in concurrent
     import org.junit.runner.RunWith;    
     
     //Don't forget to use the adapted JUnit test runner
-    @RunWith(JUnitWithPerf.class)
+    @RunWith(ParallelJUnit.class)
     public class Tests {
     
        //Regular JUnit test - passed on to default JUnit runner.
