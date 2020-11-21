@@ -21,6 +21,8 @@ The **@ParallelTest** is used instead of the **@Test** annotation of regular JUn
 
 Regular JUnit **@Test** optional arguments **timeout** and **expected** applies for **@ParallelTest** too.
 
+![Screenshot](http://damberg.one/alster/work/paralleljunit/parelleltest.JPG)
+
 
 ## Examples
 ```java
@@ -63,6 +65,8 @@ Regular JUnit **@Test** optional arguments **timeout** and **expected** applies 
 ## ParallelizationTest
 A variant of **ParallelTest** is testing if a tested method seem to be able to handle sequential execution or truly parallel execution. In order to do this in an easy fashion the **@ParallelizationTest** is used. It execute the test method in a single thread first (to avoid first execution initialization problems), then clocks how log the execution of the test method takes with execution with one thread. After this the same method is executed in multiple parallel threads to see if this takes significantly longer than the execution in a single thread. 
 
+![Screenshot](http://damberg.one/alster/work/paralleljunit/parellelizationtest.JPG)
+
 To summarize the execution sequence:
 1. Executing once in one thread as a warm-up (populating caches, ready-compiling components and so forth)
 1. Executing once more in a timed execution with one single thread.
@@ -88,6 +92,8 @@ For this type of test the following parameters apply:
 This annotation is for performance testing closer to LoadRunner/JMeter or equivalent tools. It enables ramp-up of load and holding a system under load for a longer period of time.
 The unit test method runs in concurrent parallel threads as with the other test types in this library, and the execution time for each individual method execution (for each iteration) can be assessed towards a set threshold.
 Using this test type the threadpool used is filled up again with a new execution when a test method execution is finished.
+
+![Screenshot](http://damberg.one/alster/work/paralleljunit/loadtest.jpg)
 
 ### Examples
 
