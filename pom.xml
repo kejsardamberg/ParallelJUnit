@@ -17,6 +17,13 @@
         <tag>paralleljunit</tag>
     </scm>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <developers>
         <developer>
             <name>Zington Group</name>
