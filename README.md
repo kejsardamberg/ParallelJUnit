@@ -1,12 +1,14 @@
-# ParallelJUnit - shifting performance testing left
+# ParallelJUnit - Shifting performance testing left
 
 ## Why this exist
-Many organizations struggle with shifting performance testing left to include it into the CI/CD build pipelines. Many of the types of causes that induces performance or capacity problems cannot be identified in a build pipeline since the infrastructure of the CI-server rarely is production like. However, performance problems from coding mistakes can be identified.
+Many organizations moving towards DevOps struggle with shifting performance testing left to include it into the CI/CD build pipelines. Many of the types of causes that induces performance or capacity problems cannot be identified in a build pipeline since the infrastructure of the CI-server rarely is production like. However, performance problems from coding mistakes can be identified.
 
-Full fledged performance tests with a generated distributed load upon a system is seemingly trivial, but is a special skillset that takes years to get good at and decades to master. That's not feasible for developer performance testing. Instead this utility makes it possible to run your unit tests as mini-performance tests to check for concurency issues and locks - as a complimnet to the built in performance profilers of most IDEs.
+Full fledged performance tests with a generated distributed load upon a system is seemingly trivial, but is a special skillset that takes years to get good at and decades to master. That's not feasible for developer performance testing. Instead this utility makes it possible to run your unit tests as mini-performance tests to check for concurency issues and locks - as a complimnet to the built in performance profilers of most IDEs and to APM tools for finding infrastructure problems.
 
-## WHat it is
-Custom JUnit test runner that enables executing JUnit test methods in concurrent parallels threads by complimenting JUnit with the use of the *@Test* alternative annotations:
+This enables easy response time assertions over multi-thread tests. 
+
+## What it is
+It's a custom JUnit test runner that enables executing JUnit test methods in concurrent parallels threads by complimenting JUnit with the use of the *@Test* alternative annotations:
 
 *@ParallelTest* 
 
