@@ -13,16 +13,16 @@ import java.util.List;
 abstract class CustomTestMethodRunner {
 
     RunNotifier notifier;
-    Class testClass;
+    Class<?> testClass;
     Method method;
     List<Exception> innerExceptions;
     Class expectedException;
 
-    CustomTestMethodRunner(RunNotifier notifier, Class testClass, Method method){
+    CustomTestMethodRunner(RunNotifier notifier, Class<?> testClass, Method method){
         this.notifier = notifier;
         this.testClass = testClass;
         this.method = method;
-        innerExceptions = new ArrayList<Exception>();
+        innerExceptions = new ArrayList<>();
         expectedException = null;
         for(Annotation a : method.getAnnotations()){
             Object annotationObject = method.getAnnotation(a.getClass());
@@ -59,7 +59,7 @@ abstract class CustomTestMethodRunner {
             notifier.fireTestFailure(
                     new Failure(
                             Description.createTestDescription(testClass, method.getName()),
-                            new TestDurationCheckFailedException("The test took " + actualDuration + " ms while the expected max duration was " + maxDuration + " ms.")
+                            new TestMethodExecutionDurationCheckFailedException("The test took " + actualDuration + " ms while the expected max duration was " + maxDuration + " ms.")
                     )
             );
     }

@@ -4,6 +4,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @RunWith(ParallelJUnit.class)
 public class Tests {
 
@@ -31,6 +34,23 @@ public class Tests {
     @ParallelizationTest(multipleThreadsCount = 3, maxExecutionDurationMultipleForMultipleThreadsExecution = 1.5)
     public void parallelizationTest() throws InterruptedException {
         Thread.sleep(100);
+    }
+
+    @LoadTest(maxThreadCount = 3, totalDurationInMilliseconds = 1000)
+    public void loadTest() throws InterruptedException {
+        System.out.println("Running thread at " + new SimpleDateFormat("HH:mm:ss SS").format(new Date()));
+        Thread.sleep(200);
+    }
+
+    @LoadTest(
+            maxThreadCount = 10,
+            totalDurationInMilliseconds = 5000,
+            rampUpTimeInMilliseconds = 2000,
+            abruptTerminationAtTestEnd = true,
+            maxExecutionTimeIndividualIteration = 1300)
+    public void loadTestWithRampUp() throws InterruptedException {
+        System.out.println("Running thread at " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        Thread.sleep(1000);
     }
 
 }

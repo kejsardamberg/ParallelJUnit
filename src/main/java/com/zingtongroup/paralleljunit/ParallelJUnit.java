@@ -13,8 +13,9 @@ import java.lang.reflect.Method;
  */
 public class ParallelJUnit extends Runner {
 
-    private final Class testClass;
-    public ParallelJUnit(Class testClass) {
+    private final Class<?> testClass;
+
+    public ParallelJUnit(Class<?> testClass) {
         super();
         this.testClass = testClass;
     }
@@ -35,6 +36,10 @@ public class ParallelJUnit extends Runner {
 
                 if(method.isAnnotationPresent(ParallelizationTest.class)){
                     new ParallelizationTestMethodRunner(notifier, testClass, method).run();
+                }
+
+                if(method.isAnnotationPresent(LoadTest.class)){
+                    new LoadTestMethodRunner(notifier, testClass, method).run();
                 }
 
                 if (method.isAnnotationPresent(Test.class)) {

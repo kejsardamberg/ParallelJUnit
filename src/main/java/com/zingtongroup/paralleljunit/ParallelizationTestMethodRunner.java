@@ -22,7 +22,7 @@ class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
     private final List<Object> testClassObjects;
     long singleThreadDurationInMilliseconds;
 
-    ParallelizationTestMethodRunner(RunNotifier notifier, Class testClass, Method method) throws Exception {
+    ParallelizationTestMethodRunner(RunNotifier notifier, Class<?> testClass, Method method) throws Exception {
         super(notifier, testClass, method);
         singleThreadDurationInMilliseconds = 0;
         ParallelizationTest para = method.getAnnotation(ParallelizationTest.class);
@@ -33,9 +33,9 @@ class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
 
         System.out.println("Running test method " + method.getName() + " to check parallelization.");
 
-        testClassObjects = new ArrayList<Object>();
+        testClassObjects = new ArrayList<>();
         testThreadPool = Executors.newFixedThreadPool(multipleThreadsCount);
-        testMethods = new ArrayList<ParallelTestRunnable>();
+        testMethods = new ArrayList<>();
     }
 
     @Override
@@ -62,7 +62,7 @@ class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
             notifier.fireTestFailure(
                     new Failure(
                             Description.createTestDescription(testClass, method.getName()),
-                            new TestDurationCheckFailedException("The single thread test execution took " + singleThreadDurationInMilliseconds + " ms while the " + multipleThreadsCount + " parallel threads execution took " + parallelExecutionDurationInMilliseconds + " ms.")
+                            new TestMethodExecutionDurationCheckFailedException("The single thread test execution took " + singleThreadDurationInMilliseconds + " ms while the " + multipleThreadsCount + " parallel threads execution took " + parallelExecutionDurationInMilliseconds + " ms.")
                     )
             );
 
@@ -111,13 +111,7 @@ class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
         for(int i = 0; i < multipleThreadsCount; i++){
             try {
                 testClassObjects.add(testClass.getDeclaredConstructor().newInstance());
-            } catch (InstantiationException e) {
-                innerExceptions.add(new TestClassInstantiationException(e));
-            } catch (IllegalAccessException e) {
-                innerExceptions.add(new TestClassInstantiationException(e));
-            } catch (NoSuchMethodException e) {
-                innerExceptions.add(new TestClassInstantiationException(e));
-            } catch (InvocationTargetException e) {
+            } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 innerExceptions.add(new TestClassInstantiationException(e));
             }
         }
@@ -126,15 +120,8 @@ class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
     private void executeSingleThreadRun(Object testClassObject) {
         if(testClassObject == null){
             try{
-                if(testClass.getDeclaredConstructor() != null)
-                    testClassObject = testClass.getDeclaredConstructor().newInstance(); //Creation
-            } catch (InstantiationException e) {
-                innerExceptions.add(new TestClassInstantiationException(e));
-            } catch (InvocationTargetException e) {
-                innerExceptions.add(new TestClassInstantiationException(e));
-            } catch (NoSuchMethodException e) {
-                innerExceptions.add(new TestClassInstantiationException(e));
-            } catch (IllegalAccessException e) {
+                testClassObject = testClass.getDeclaredConstructor().newInstance(); //Creation
+            } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
                 innerExceptions.add(new TestClassInstantiationException(e));
             }
         }

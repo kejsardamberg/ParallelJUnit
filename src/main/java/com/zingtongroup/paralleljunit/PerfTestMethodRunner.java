@@ -23,7 +23,7 @@ class PerfTestMethodRunner extends CustomTestMethodRunner {
     List<Object> testClassObjects;
     long startTime;
 
-    PerfTestMethodRunner(RunNotifier notifier, Class testClass, Method method) throws Exception {
+    PerfTestMethodRunner(RunNotifier notifier, Class<?> testClass, Method method) throws Exception {
         super(notifier, testClass, method);
         notifier.fireTestStarted(Description
                 .createTestDescription(testClass, method.getName()));
@@ -38,9 +38,9 @@ class PerfTestMethodRunner extends CustomTestMethodRunner {
             timeoutMessage = " and a maximum expected test duration of " + maxMilliseconds + " ms";
         System.out.println("Running test method " + method.getName() + " in " + threadCount + " parallel threads" + timeoutMessage + ".");
 
-        testClassObjects = new ArrayList<Object>();
+        testClassObjects = new ArrayList<>();
         testThreadPool = Executors.newFixedThreadPool(threadCount);
-        testMethods = new ArrayList<ParallelTestRunnable>();
+        testMethods = new ArrayList<>();
     }
 
     @Override
@@ -72,11 +72,7 @@ class PerfTestMethodRunner extends CustomTestMethodRunner {
                     try {
                         Method m = annotationObject.getClass().getMethod("expected", annotationObject.getClass());
                         expectedException = (Class<? extends Throwable>) m.invoke(annotationObject, new Object[]{null});
-                    } catch (NoSuchMethodException noSuchMethodException) {
-                        //Ignored
-                    } catch (IllegalAccessException illegalAccessException) {
-                        //Ignored
-                    } catch (InvocationTargetException invocationTargetException) {
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException noSuchMethodException) {
                         //Ignored
                     }
                 }
