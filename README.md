@@ -16,6 +16,11 @@ It's a custom JUnit test runner that enables executing JUnit test methods in con
 
 *@LoadTest*
 
+## ParallelTest annotation
+The **@ParallelTest** is used instead of the **@Test** annotation of regular JUnit. When the **@ParallelTest** is used the test method is executed concurrently in multiple threads. The number of concurrent threads may be set by the **threadCount** argument. Default **threadCount** for ParallelTest is 2.
+
+Regular JUnit **@Test** optional arguments **timeout** and **expected** applies for **@ParallelTest** too.
+
 
 ## Examples
 ```java
@@ -51,12 +56,42 @@ It's a custom JUnit test runner that enables executing JUnit test methods in con
            Assert.assertTrue(true);
        }
        
+    }
+```
+
+
+## ParallelizationTest
+A variant of **ParallelTest** is testing if a tested method seem to be able to handle sequential execution or truly parallel execution. In order to do this in an easy fashion the **@ParallelizationTest** is used. It execute the test method in a single thread first (to avoid first execution initialization problems), then clocks how log the execution of the test method takes with execution with one thread. After this the same method is executed in multiple parallel threads to see if this takes significantly longer than the execution in a single thread. 
+
+To summarize the execution sequence:
+1. Executing once in one thread as a warm-up (populating caches, ready-compiling components and so forth)
+1. Executing once more in a timed execution with one single thread.
+1. Executing with multiple concurrent and parallel threads in a timed execution run.
+1. Evaluating the success by assessing the ratio between the single thread execution duration with the multiple parallel execution duration variable (using **maxExecutionDurationMultipleForMultipleThreadsExecution** parameter). 
+
+For this type of test the following parameters apply:
+* Number of concurrent threads when executed in parallel: **multipleThreadsCount** (default = 3).
+* Duration ration to assess test success towards **maxExecutionDurationMultipleForMultipleThreadsExecution** (default = 1.5)
+
+### Example
+
+```java
        //Runs once single-threaded for warm-up, once single-threaded for benchmark, and once multi-threaded for comparison. 
        @ParallelizationTest(multipleThreadsCount = 3, maxExecutionDurationMultipleForMultipleThreadsExecution = 1.5)
        public void parallelizationTest() throws InterruptedException {
            Thread.sleep(100);
        }
-       
+```
+
+
+## LoadTest
+This annotation is for performance testing closer to LoadRunner/JMeter or equivalent tools. It enables ramp-up of load and holding a system under load for a longer period of time.
+The unit test method runs in concurrent parallel threads as with the other test types in this library, and the execution time for each individual method execution (for each iteration) can be assessed towards a set threshold.
+Using this test type the threadpool used is filled up again with a new execution when a test method execution is finished.
+
+### Examples
+
+```java
        //Runs this test method continuously in a thread pool of 3 concurrent threads for 1000 milliseconds 
         @LoadTest(maxThreadCount = 3, totalDurationInMilliseconds = 1000)
         public void loadTest() throws InterruptedException {
@@ -79,31 +114,7 @@ It's a custom JUnit test runner that enables executing JUnit test methods in con
             System.out.println("Running thread at " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
             Thread.sleep(1000);
         }
-    }
 ```
-
-## ParallelTest annotation
-The **@ParallelTest** is used instead of the **@Test** annotation of regular JUnit. When the **@ParallelTest** is used the test method is executed concurrently in multiple threads. The number of concurrent threads may be set by the **threadCount** argument. Default **threadCount** for ParallelTest is 2.
-
-Regular JUnit **@Test** optional arguments **timeout** and **expected** applies for **@ParallelTest** too.
-
-## ParallelizationTest
-A variant of **ParallelTest** is testing if a tested method seem to be able to handle sequential execution or truly parallel execution. In order to do this in an easy fashion the **@ParallelizationTest** is used. It execute the test method in a single thread first (to avoid first execution initialization problems), then clocks how log the execution of the test method takes with execution with one thread. After this the same method is executed in multiple parallel threads to see if this takes significantly longer than the execution in a single thread. 
-
-To summarize the execution sequence:
-1. Executing once in one thread as a warm-up (populating caches, ready-compiling components and so forth)
-1. Executing once more in a timed execution with one single thread.
-1. Executing with multiple concurrent and parallel threads in a timed execution run.
-1. Evaluating the success by assessing the ratio between the single thread execution duration with the multiple parallel execution duration variable (using **maxExecutionDurationMultipleForMultipleThreadsExecution** parameter). 
-
-For this type of test the following parameters apply:
-* Number of concurrent threads when executed in parallel: **multipleThreadsCount** (default = 3).
-* Duration ration to assess test success towards **maxExecutionDurationMultipleForMultipleThreadsExecution** (default = 1.5)
-
-## LoadTest
-This annotation is for performance testing closer to LoadRunner/JMeter or equivalent tools. It enables ramp-up of load and holding a system under load for a longer period of time.
-The unit test method runs in concurrent parallel threads as with the other test types in this library, and the execution time for each individual method execution (for each iteration) can be assessed towards a set threshold.
-Using this test type the threadpool used is filled up again with a new execution when a test method execution is finished.
 
 ### Options/parameters/arguments:
 * maxThreadCount (default 2)
