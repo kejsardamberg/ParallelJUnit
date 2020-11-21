@@ -18,6 +18,17 @@ It's a custom JUnit test runner that enables executing JUnit test methods in con
 
 *@LoadTest*
 
+## Getting started
+Add the following dependency to your maven pom file:
+
+    <dependency>
+      <groupId>com.github.claremontqualitymanagement</groupId>
+      <artifactId>ParallelJUnit</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+
+Or download it as a jar from the link above - or clone this repository and complie it yourself.
+
 ## ParallelTest annotation
 The **@ParallelTest** is used instead of the **@Test** annotation of regular JUnit. When the **@ParallelTest** is used the test method is executed concurrently in multiple threads. The number of concurrent threads may be set by the **threadCount** argument. Default **threadCount** for ParallelTest is 2.
 
