@@ -4,7 +4,6 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,13 +11,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
 
-public class LoadTestMethodRunner extends CustomTestMethodRunner{
+class LoadTestMethodRunner extends CustomTestMethodRunnerBase {
     ExecutorService threadPool;
     LoadTest loadTestInstance;
     public boolean isInterrupted;
     Set<Object> testClassInstances;
 
-    public LoadTestMethodRunner(RunNotifier notifier, Class<?> testClass, Method method) throws Exception {
+    LoadTestMethodRunner(RunNotifier notifier, Class<?> testClass, Method method) throws Exception {
         super(notifier, testClass, method);
         testClassInstances = new HashSet<>();
         loadTestInstance = method.getAnnotation(LoadTest.class);
@@ -112,10 +111,13 @@ public class LoadTestMethodRunner extends CustomTestMethodRunner{
         @Override
         public void run() {
             if(isInterrupted)return;
-            if(testClassInstance == null)
+            boolean testClassInstanceIsLocal = (testClassInstance == null);
+            if(testClassInstanceIsLocal)
                 testClassInstance = createTestClassInstance();
             try {
+                runBeforeMethods(testClassInstance);
                 method.invoke(testClassInstance);
+                runAfterMethods(testClassInstance);
                 startContinuousMethodExecutionThread(testClassInstance);
             } catch (Exception e) {
                 innerExceptions.add(new TestMethodExecutionException(e));

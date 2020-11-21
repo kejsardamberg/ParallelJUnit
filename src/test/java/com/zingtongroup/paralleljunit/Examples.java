@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RunWith(ParallelJUnit.class)
-public class Tests {
+public class Examples {
 
     @Test
     public void passingRegularTestShouldPass(){
@@ -46,6 +46,8 @@ public class Tests {
             maxThreadCount = 10,
             totalDurationInMilliseconds = 5000,
             rampUpTimeInMilliseconds = 2000,
+            preEmptiveTestClassInstantiationWithTestClassObjectReUsedBetweenIterations = true,
+            haltOnError = true,
             abruptTerminationAtTestEnd = true,
             maxExecutionTimeIndividualIteration = 1300)
     public void loadTestWithRampUp() throws InterruptedException {

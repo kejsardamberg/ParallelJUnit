@@ -13,16 +13,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
+class ParallelizationTestRunner extends CustomTestMethodRunnerBase {
 
     private final int multipleThreadsCount;
     private final double maxExecutionDurationMultipleForMultipleThreadsExecution;
     private final ExecutorService testThreadPool;
-    private final List<ParallelTestRunnable> testMethods;
+    private final List<TestMethodExecutor> testMethods;
     private final List<Object> testClassObjects;
     long singleThreadDurationInMilliseconds;
 
-    ParallelizationTestMethodRunner(RunNotifier notifier, Class<?> testClass, Method method) throws Exception {
+    ParallelizationTestRunner(RunNotifier notifier, Class<?> testClass, Method method) throws Exception {
         super(notifier, testClass, method);
         singleThreadDurationInMilliseconds = 0;
         ParallelizationTest para = method.getAnnotation(ParallelizationTest.class);
@@ -45,15 +45,10 @@ class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
 
         executeSingleThreadRun(null); //Warm up test execution to avoid initiation differences.
 
-        Object testClassObject = null;
-        try {
-            testClassObject = testClass.getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            innerExceptions.add(new TestClassInstantiationException(e));
-        }
         long startTime = System.currentTimeMillis();
-        executeSingleThreadRun(testClassObject);
+        executeSingleThreadRun(null);
         this.singleThreadDurationInMilliseconds = System.currentTimeMillis() - startTime;
+
         instantiateTestClassObjects();
         long parallelExecutionStartTime = System.currentTimeMillis();
         executeTestInParallelThreads(testClassObjects);
@@ -71,10 +66,10 @@ class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
     }
 
     private void executeTestInParallelThreads(List<Object> testClassObjects) {
-        for(int i=0; i<multipleThreadsCount; i++)
-            testMethods.add(new ParallelTestRunnable(testClassObjects.get(i), method));
+        for(int i = 0; i < multipleThreadsCount; i++)
+            testMethods.add(new TestMethodExecutor(testClassObjects.get(i), method));
 
-        for (ParallelTestRunnable testMethod : testMethods) {
+        for (TestMethodExecutor testMethod : testMethods) {
             try {
                 testThreadPool.execute(testMethod);
             } catch (Exception e) {
@@ -100,7 +95,7 @@ class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
     }
 
     private void testExecutionExceptionCheck(){
-        for (ParallelTestRunnable testMethod : testMethods) {
+        for (TestMethodExecutor testMethod : testMethods) {
             if (testMethod.innerException != null) {
                 notifier.fireTestFailure(new Failure(Description.createTestDescription(testClass, method.getName()), testMethod.innerException));
             }
@@ -119,14 +114,12 @@ class ParallelizationTestMethodRunner extends CustomTestMethodRunner {
 
     private void executeSingleThreadRun(Object testClassObject) {
         if(testClassObject == null){
-            try{
-                testClassObject = testClass.getDeclaredConstructor().newInstance(); //Creation
-            } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                innerExceptions.add(new TestClassInstantiationException(e));
-            }
+            testClassObject = createTestClassInstance();
         }
         try {
+            runBeforeMethods(testClassObject);
             method.invoke(testClassObject);
+            runAfterMethods(testClassObject);
         } catch (Exception e) {
             innerExceptions.add(new TestMethodExecutionException(e));
         }

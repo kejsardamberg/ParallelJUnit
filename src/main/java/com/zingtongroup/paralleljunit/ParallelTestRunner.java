@@ -14,16 +14,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-class PerfTestMethodRunner extends CustomTestMethodRunner {
+class ParallelTestRunner extends CustomTestMethodRunnerBase {
 
     int threadCount;
     ExecutorService testThreadPool;
     int maxMilliseconds;
-    List<ParallelTestRunnable> testMethods;
+    List<TestMethodExecutor> testMethods;
     List<Object> testClassObjects;
     long startTime;
 
-    PerfTestMethodRunner(RunNotifier notifier, Class<?> testClass, Method method) throws Exception {
+    ParallelTestRunner(RunNotifier notifier, Class<?> testClass, Method method) throws Exception {
         super(notifier, testClass, method);
         notifier.fireTestStarted(Description
                 .createTestDescription(testClass, method.getName()));
@@ -58,11 +58,11 @@ class PerfTestMethodRunner extends CustomTestMethodRunner {
 
     void executeTest() {
         for(int i=0; i<threadCount; i++)
-            testMethods.add(new ParallelTestRunnable(testClassObjects.get(i), method));
+            testMethods.add(new TestMethodExecutor(testClassObjects.get(i), method));
 
         startTime = System.currentTimeMillis();
 
-        for (ParallelTestRunnable testMethod : testMethods) {
+        for (TestMethodExecutor testMethod : testMethods) {
             try {
                 testThreadPool.execute(testMethod);
             } catch (Exception e) {

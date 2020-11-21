@@ -31,11 +31,11 @@ public class ParallelJUnit extends Runner {
         try {
             for (Method method : testClass.getMethods()) {
                 if(method.isAnnotationPresent(ParallelTest.class)){
-                    new PerfTestMethodRunner(notifier, testClass, method).run();
+                    new ParallelTestRunner(notifier, testClass, method).run();
                 }
 
                 if(method.isAnnotationPresent(ParallelizationTest.class)){
-                    new ParallelizationTestMethodRunner(notifier, testClass, method).run();
+                    new ParallelizationTestRunner(notifier, testClass, method).run();
                 }
 
                 if(method.isAnnotationPresent(LoadTest.class)){

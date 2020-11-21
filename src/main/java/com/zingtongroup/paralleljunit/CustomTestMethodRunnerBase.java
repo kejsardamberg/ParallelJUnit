@@ -1,16 +1,24 @@
 package com.zingtongroup.paralleljunit;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Internal custom test method runner for parallel exeution of test methods.
+ * Enables running of Before and After methods in the test class too, but not the
+ * BeforeClass or AfterClass static methods.
+ */
 @SuppressWarnings("rawtypes")
-abstract class CustomTestMethodRunner {
+abstract class CustomTestMethodRunnerBase {
 
     RunNotifier notifier;
     Class<?> testClass;
@@ -18,7 +26,7 @@ abstract class CustomTestMethodRunner {
     List<Exception> innerExceptions;
     Class expectedException;
 
-    CustomTestMethodRunner(RunNotifier notifier, Class<?> testClass, Method method){
+    CustomTestMethodRunnerBase(RunNotifier notifier, Class<?> testClass, Method method){
         this.notifier = notifier;
         this.testClass = testClass;
         this.method = method;
@@ -40,6 +48,22 @@ abstract class CustomTestMethodRunner {
     }
 
     abstract void run();
+
+    static void runBeforeMethods(Object testClassInstance) throws InvocationTargetException, IllegalAccessException {
+        for(Method method :testClassInstance.getClass().getMethods()){
+            if(method.isAnnotationPresent(Before.class)){
+                method.invoke(testClassInstance);
+            }
+        }
+    }
+
+    static void runAfterMethods(Object testClassInstance) throws InvocationTargetException, IllegalAccessException {
+        for(Method method :testClassInstance.getClass().getMethods()){
+            if(method.isAnnotationPresent(After.class)){
+                method.invoke(testClassInstance);
+            }
+        }
+    }
 
     Object createTestClassInstance(){
         try{

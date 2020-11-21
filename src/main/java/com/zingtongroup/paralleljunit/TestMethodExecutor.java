@@ -2,7 +2,7 @@ package com.zingtongroup.paralleljunit;
 
 import java.lang.reflect.Method;
 
-class ParallelTestRunnable implements Runnable{
+class TestMethodExecutor implements Runnable {
 
     Object testClassObject;
     Method method;
@@ -12,13 +12,15 @@ class ParallelTestRunnable implements Runnable{
     @Override
     public void run() {
         try {
+            CustomTestMethodRunnerBase.runBeforeMethods(testClassObject);
             testMethodReturnObject = method.invoke(testClassObject);
+            CustomTestMethodRunnerBase.runAfterMethods(testClassObject);
         } catch (Exception e) {
             innerException = e;
         }
     }
 
-    ParallelTestRunnable(Object testClassObject, Method testMethod){
+    TestMethodExecutor(Object testClassObject, Method testMethod){
         this.testClassObject = testClassObject;
         this.method = testMethod;
     }
