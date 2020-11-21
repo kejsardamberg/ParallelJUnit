@@ -14,6 +14,8 @@ It's a custom JUnit test runner that enables executing JUnit test methods in con
 
 *@ParallelizationTest*
 
+*@LoadTest*
+
 
 ## Examples
 ```java
@@ -54,6 +56,29 @@ It's a custom JUnit test runner that enables executing JUnit test methods in con
        public void parallelizationTest() throws InterruptedException {
            Thread.sleep(100);
        }
+       
+       //Runs this test method continuously in a thread pool of 3 concurrent threads for 1000 milliseconds 
+        @LoadTest(maxThreadCount = 3, totalDurationInMilliseconds = 1000)
+        public void loadTest() throws InterruptedException {
+            System.out.println("Running thread at " + new SimpleDateFormat("HH:mm:ss SS").format(new Date()));
+            Thread.sleep(200);
+        }
+
+        //Run this test method continuously in 10 parallel, but ramp these up evenly over 2 seconds 
+        //of time until full load and halt on any test interation taking longer than 1300 milliseconds and re-use
+        //the test class instances for method invocation. Halt test abruptly after 5 seconds.
+        @LoadTest(
+            maxThreadCount = 10,
+            totalDurationInMilliseconds = 5000,
+            rampUpTimeInMilliseconds = 2000,
+            preEmptiveTestClassInstantiationWithTestClassObjectReUsedBetweenIterations = true,
+            haltOnError = true,
+            abruptTerminationAtTestEnd = true,
+            maxExecutionTimeIndividualIteration = 1300)
+        public void loadTestWithRampUp() throws InterruptedException {
+            System.out.println("Running thread at " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+            Thread.sleep(1000);
+        }
     }
 ```
 
@@ -74,6 +99,22 @@ To summarize the execution sequence:
 For this type of test the following parameters apply:
 * Number of concurrent threads when executed in parallel: **multipleThreadsCount** (default = 3).
 * Duration ration to assess test success towards **maxExecutionDurationMultipleForMultipleThreadsExecution** (default = 1.5)
+
+## LoadTest
+This annotation is for performance testing closer to LoadRunner/JMeter or equivalent tools. It enables ramp-up of load and holding a system under load for a longer period of time.
+The unit test method runs in concurrent parallel threads as with the other test types in this library, and the execution time for each individual method execution (for each iteration) can be assessed towards a set threshold.
+Using this test type the threadpool used is filled up again with a new execution when a test method execution is finished.
+
+### Options/parameters/arguments:
+* maxThreadCount (default 2)
+* rampUpTimeInMilliseconds (default 0)
+* preEmptiveTestClassInstantiationWithTestClassObjectReUsedBetweenIterations (default false, saves time from test class instantiation in each iteration)
+* totalDurationInMilliseconds (default 3000)
+* haltOnError (default false, makes the test halt upon errors - including execution time assertions)
+* maxExecutionTimeIndividualIteration (default ignored, throws an assertion error if any of the method executions takes longer than this)
+* abruptTerminationAtTestEnd (default true, if set to false it leaves all threads up to 30 seconds to finish);
+* timeout (default 30000, halts test abruptly if it takes longer than this, for compatiblity with JUnit @Test annotation)
+* expected (any expected exception to ignore)
 
 ## Technical notes
 * Each test method thread execution is executed on its own test class instance.
