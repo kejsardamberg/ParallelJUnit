@@ -4,7 +4,7 @@
 
     <groupId>com.github.claremontqualitymanagement</groupId>
     <artifactId>ParallelJUnit</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <url>https://github.com/kejsardamberg/ParallelJUnit</url>
@@ -14,7 +14,7 @@
     <scm>
         <connection>scm:git:http://github.com/kejsardamberg/ParallelJUnit.git</connection>
         <url>https://github.com/kejsardamberg/ParallelJUnit</url>
-        <tag>paralleljunit</tag>
+        <tag>ParallelJUnit-1.0</tag>
     </scm>
 
     <developers>
