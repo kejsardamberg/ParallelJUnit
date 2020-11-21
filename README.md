@@ -3,7 +3,7 @@
 ## Why this exist
 Many organizations moving towards DevOps struggle with shifting performance testing left to include it into the CI/CD build pipelines. Many of the types of causes that induces performance or capacity problems cannot be identified in a build pipeline since the infrastructure of the CI-server rarely is production like. However, performance problems from coding mistakes can be identified.
 
-Full fledged performance tests with a generated distributed load upon a system is seemingly trivial, but is a special skillset that takes years to get good at and decades to master. That's not feasible for developer performance testing. Instead this utility makes it possible to run your unit tests as mini-performance tests to check for concurency issues and locks - as a complimnet to the built in performance profilers of most IDEs and to APM tools for finding infrastructure problems.
+Full-fledged performance tests with a generated distributed load upon a system is seemingly trivial, but is a special skillset that takes years to get good at and decades to master. That's not feasible for developer performance testing. Instead this utility makes it possible to run your unit tests as mini-performance tests to check for concurrency issues and locks - as a complimnet to the built-in performance profilers of most IDEs and to APM tools for finding infrastructure problems.
 
 This enables easy response time assertions over multi-thread tests. 
 
@@ -27,7 +27,7 @@ Add the following dependency to your maven pom file:
       <version>1.0.2</version>
     </dependency>
 
-Or download it as a jar from the link above - or clone this repository and complie it yourself.
+Or download it as a jar from the link above - or clone this repository and compile it yourself.
 
 ## ParallelTest annotation
 The **@ParallelTest** is used instead of the **@Test** annotation of regular JUnit. When the **@ParallelTest** is used the test method is executed concurrently in multiple threads. The number of concurrent threads may be set by the **threadCount** argument. Default **threadCount** for ParallelTest is 2.
@@ -76,7 +76,7 @@ Regular JUnit **@Test** optional arguments **timeout** and **expected** applies 
 
 
 ## ParallelizationTest
-A variant of **ParallelTest** is testing if a tested method seem to be able to handle sequential execution or truly parallel execution. In order to do this in an easy fashion the **@ParallelizationTest** is used. It execute the test method in a single thread first (to avoid first execution initialization problems), then clocks how log the execution of the test method takes with execution with one thread. After this the same method is executed in multiple parallel threads to see if this takes significantly longer than the execution in a single thread. 
+A variant of **ParallelTest** is testing if a tested method seem to be able to handle sequential execution or truly parallel execution. In order to do this in an easy fashion the **@ParallelizationTest** is used. It executes the test method in a single thread first (to avoid first execution initialization problems), then clocks how log the execution of the test method takes with execution with one thread. After this the same method is executed in multiple parallel threads to see if this takes significantly longer than the execution in a single thread. 
 
 ![Screenshot](http://damberg.one/alster/work/paralleljunit/parellelizationtest.JPG)
 
@@ -104,7 +104,7 @@ For this type of test the following parameters apply:
 ## LoadTest
 This annotation is for performance testing closer to LoadRunner/JMeter or equivalent tools. It enables ramp-up of load and holding a system under load for a longer period of time.
 The unit test method runs in concurrent parallel threads as with the other test types in this library, and the execution time for each individual method execution (for each iteration) can be assessed towards a set threshold.
-Using this test type the threadpool used is filled up again with a new execution when a test method execution is finished.
+Using this test type the thread pool used is filled up again with a new execution when a test method execution is finished.
 
 ![Screenshot](http://damberg.one/alster/work/paralleljunit/loadtest.jpg)
 
@@ -143,7 +143,7 @@ Using this test type the threadpool used is filled up again with a new execution
 * haltOnError (default false, makes the test halt upon errors - including execution time assertions)
 * maxExecutionTimeIndividualIteration (default ignored, throws an assertion error if any of the method executions takes longer than this)
 * abruptTerminationAtTestEnd (default true, if set to false it leaves all threads up to 30 seconds to finish);
-* timeout (default 30000, halts test abruptly if it takes longer than this, for compatiblity with JUnit @Test annotation)
+* timeout (default 30000, halts test abruptly if it takes longer than this, for compatibility with JUnit @Test annotation)
 * expected (any expected exception to ignore)
 
 ## Technical notes
@@ -154,7 +154,7 @@ Using this test type the threadpool used is filled up again with a new execution
 * Default **expected** (Expected thrown exceptions from test execution) = none.
 
 ## Testing notes
-Testing with the same data over and over is a bit risky. In part because any cache in the system might respond after first request, giving un-normal response times, and partly because mant databases uses read-locks for requested records. Accessing the same record many times hence could create queues in the database. 
+Testing with the same data over and over is a bit risky. In part because any cache in the system might respond after first request, giving un-normal response times, and partly because many databases uses read locks for requested records. Accessing the same record many times hence could create queues in the database. 
 
 Testing in a dev environment is not in any way equal of testing in a more production like environment. An SQL triggering a full table scan is way different with limited data in the database, and an environment with indexes maintained and refreshed is way quicker than any environment that's remotely neglected.
 
