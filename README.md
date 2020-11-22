@@ -7,7 +7,8 @@ Full-fledged performance tests with a generated distributed load upon a system i
 
 This enables easy response time assertions over multi-thread tests. 
 
-For **jar download** and references to the **C#/.NET** equivalent, look here: http://damberg.one/alster/work/paralleljunit/index.html.
+For **jar download**, look here: http://damberg.one/alster/work/paralleljunit/index.html.
+For the **C#/.NET** equivalent, look here: https://kejsardamberg.visualstudio.com/_git/ParallelMsTest
 
 ## What it is
 It's a custom JUnit test runner that enables executing JUnit test methods in concurrent parallels threads by complimenting JUnit with the use of the *@Test* alternative annotations:
